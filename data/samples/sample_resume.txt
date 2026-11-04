@@ -1,0 +1,5 @@
+Maya Hassan
+Data engineer based in Cairo. Email: maya@example.com
+Skills: Python, SQL, Apache Spark
+Experience: Data Engineer at Nile Data, 2022-present. Built reliable data pipelines.
+Education: BSc Computer Science, Cairo University, 2018-2022.

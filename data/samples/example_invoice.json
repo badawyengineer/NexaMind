@@ -1,0 +1,15 @@
+{
+  "invoice_number": "INV-2025-014",
+  "invoice_date": "2025-02-01",
+  "due_date": "2025-03-01",
+  "vendor": {"name": "Northwind Office Supplies"},
+  "customer": {"name": "Contoso Analytics"},
+  "line_items": [
+    {"description": "notebooks", "quantity": "3", "unit_price": "4.00", "amount": "12.00"}
+  ],
+  "subtotal": "12.00",
+  "tax": "1.20",
+  "total": "13.20",
+  "currency": "USD",
+  "notes": []
+}
