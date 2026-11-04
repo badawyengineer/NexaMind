@@ -1,0 +1,10 @@
+INVOICE
+Invoice number: INV-2025-014
+Date: 2025-02-01
+Due date: 2025-03-01
+Vendor: Northwind Office Supplies
+Customer: Contoso Analytics
+3 notebooks at USD 4.00 each: USD 12.00
+Subtotal: USD 12.00
+Tax: USD 1.20
+Total: USD 13.20

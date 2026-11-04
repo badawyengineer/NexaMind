@@ -1,0 +1,15 @@
+{
+  "full_name": "Maya Hassan",
+  "contact": {"email": "maya@example.com", "phone": null, "location": "Cairo", "links": []},
+  "professional_summary": "Data engineer based in Cairo.",
+  "skills": ["Python", "SQL", "Apache Spark"],
+  "education": [
+    {"institution": "Cairo University", "degree": "BSc", "field": "Computer Science", "start_date": "2018", "end_date": "2022"}
+  ],
+  "work_experience": [
+    {"organization": "Nile Data", "title": "Data Engineer", "start_date": "2022", "end_date": "present", "description": ["Built reliable data pipelines."]}
+  ],
+  "projects": [],
+  "certifications": [],
+  "languages": []
+}

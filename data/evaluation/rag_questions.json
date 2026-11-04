@@ -1,0 +1,4 @@
+[
+  {"question":"What is the total on the sample invoice?","expected_answer":"USD 13.20","source":"sample_invoice.txt","page":1},
+  {"question":"Which tools are listed in Maya's skills?","expected_answer":"Python, SQL, Apache Spark","source":"sample_resume.txt","page":1}
+]
