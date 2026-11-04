@@ -1,8 +1,13 @@
 .venv/
 .env
+.env.*
+!.env.example
 __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.py[cod]
 data/vectorstore/
+data/evaluation/vectorstore/
+data/conversations.sqlite3
+reports/evaluation/
 *.log

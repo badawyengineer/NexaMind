@@ -1,9 +1,13 @@
 from collections.abc import Iterator
 
 from genai_engineering.core.config import get_settings
+from genai_engineering.core.embeddings import (
+    EmbeddingProvider,
+    create_embedding_provider,
+)
+from genai_engineering.core.observability import observe
 from genai_engineering.core.providers import LLMProvider
 from genai_engineering.task2_rag.chunking import split_pages
-from genai_engineering.task2_rag.embeddings import Embeddings
 from genai_engineering.task2_rag.ingestion import load_document
 from genai_engineering.task2_rag.vector_store import ChromaStore
 
@@ -12,24 +16,42 @@ class RAGService:
     def __init__(
         self,
         provider: LLMProvider,
-        embeddings: Embeddings | None = None,
+        embeddings: EmbeddingProvider | None = None,
         store: ChromaStore | None = None,
     ) -> None:
         settings = get_settings()
         self.provider = provider
-        self.embeddings = embeddings or Embeddings(settings)
+        self.embeddings = embeddings or create_embedding_provider(settings)
         self.store = store or ChromaStore(
-            settings.chroma_path, settings.chroma_collection
+            settings.chroma_path, settings.chroma_collection, self.embeddings
         )
 
     def ingest(self, path: str) -> int:
         settings = get_settings()
-        chunks = split_pages(load_document(path, max_bytes=settings.max_file_bytes))
+        chunks = split_pages(
+            load_document(
+                path,
+                max_bytes=settings.max_file_bytes,
+                max_pages=settings.max_document_pages,
+                max_image_pixels=settings.max_image_pixels,
+                ocr_enabled=settings.ocr_enabled,
+                ocr_language=settings.ocr_language,
+                ocr_fallback_threshold=settings.ocr_fallback_threshold,
+                ocr_dpi=settings.ocr_dpi,
+                tesseract_cmd=settings.tesseract_cmd,
+            )
+        )
         if hasattr(self.store, "new_chunks"):
             chunks = self.store.new_chunks(chunks)
         if not chunks:
             return 0
-        vectors = self.embeddings.embed([c["text"] for c in chunks])
+        with observe(
+            "rag.embed_documents",
+            provider=self.embeddings.provider_name,
+            model=self.embeddings.get_model_name(),
+            item_count=len(chunks),
+        ):
+            vectors = self.embeddings.embed_documents([c["text"] for c in chunks])
         return self.store.add(chunks, vectors)
 
     def answer(
@@ -46,13 +68,17 @@ class RAGService:
             raise ValueError(
                 "top_k must be 1..20 and threshold must be between -1 and 1"
             )
-        hits = [
-            h
-            for h in self.store.search(
-                self.embeddings.embed([question])[0], top_k=top_k, where=where
-            )
-            if h["score"] >= threshold
-        ]
+        with observe("rag.retrieve", top_k=top_k, threshold=threshold):
+            query_vector = self.embeddings.embed_query(question)
+            hits = [
+                h
+                for h in self.store.search(query_vector, top_k=top_k, where=where)
+                if h["score"] >= threshold
+            ]
+        return self.answer_from_hits(question, hits)
+
+    def answer_from_hits(self, question: str, hits: list[dict]) -> dict:
+        """Generate a grounded answer from already retrieved hits."""
         if not hits:
             return {
                 "answer": (
@@ -94,13 +120,13 @@ class RAGService:
             raise ValueError(
                 "top_k must be 1..20 and threshold must be between -1 and 1"
             )
-        hits = [
-            h
-            for h in self.store.search(
-                self.embeddings.embed([question])[0], top_k=top_k, where=where
-            )
-            if h["score"] >= threshold
-        ]
+        with observe("rag.retrieve", top_k=top_k, threshold=threshold):
+            query_vector = self.embeddings.embed_query(question)
+            hits = [
+                h
+                for h in self.store.search(query_vector, top_k=top_k, where=where)
+                if h["score"] >= threshold
+            ]
         sources = [{**h["metadata"], "score": h["score"]} for h in hits]
         if not hits:
             return iter(

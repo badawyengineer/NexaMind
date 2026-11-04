@@ -1,0 +1,1 @@
+Evaluation fixture. Source A: the invoice total is USD 13.20. Source B: a later adjustment note says the final total is USD 14.00. These records conflict and the answer must disclose the conflict rather than silently choose one.

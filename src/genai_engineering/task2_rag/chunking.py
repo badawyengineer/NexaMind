@@ -30,6 +30,7 @@ def split_pages(
                         "source": page.source,
                         "source_id": page.source_id,
                         "page": page.page,
+                        "extraction_method": page.extraction_method,
                         "start_index": idx,
                         "chunk_id": chunk_id,
                     },

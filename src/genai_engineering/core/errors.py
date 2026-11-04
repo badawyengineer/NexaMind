@@ -18,5 +18,9 @@ class RetrievalError(GenAIError):
     pass
 
 
+class EmbeddingCompatibilityError(RetrievalError):
+    """Raised when collection vectors do not match the configured embedder."""
+
+
 class ToolError(GenAIError):
     pass

@@ -21,8 +21,8 @@ def test_chunks_keep_page_metadata():
 
 def test_no_evidence_returns_clear_message():
     class Embed:
-        def embed(self, texts):
-            return [[0.1]]
+        def embed_query(self, text):
+            return [0.1]
 
     class Store:
         def search(self, vector, **kwargs):
@@ -54,9 +54,23 @@ def test_duplicate_ingestion_skips_embedding(tmp_path):
     class Embed:
         calls = 0
 
-        def embed(self, texts):
+        provider_name = "fake"
+
+        def embed_documents(self, texts):
             self.calls += 1
             return [[0.1] for _ in texts]
+
+        def embed_query(self, text):
+            return [0.1]
+
+        def get_dimension(self):
+            return 1
+
+        def get_model_name(self):
+            return "fake"
+
+        def get_model_revision(self):
+            return "test"
 
     class Store:
         known = set()

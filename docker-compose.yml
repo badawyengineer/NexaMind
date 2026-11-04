@@ -1,0 +1,17 @@
+services:
+  nexamind:
+    build: .
+    ports:
+      - "8501:8501"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      CHROMA_PATH: /app/data/vectorstore
+      CHAT_DATABASE_PATH: /app/data/conversations.sqlite3
+    volumes:
+      - nexamind-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  nexamind-data:

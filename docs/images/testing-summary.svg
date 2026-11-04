@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">NexaMind verification results</title>
+  <desc id="desc">44 tests passed, 2 optional tests skipped. Ruff lint and formatting, uv lock check, Docker Compose configuration, and git diff checks passed.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#101a2e"/><stop offset="1" stop-color="#172b43"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="28" fill="url(#bg)"/>
+  <rect x="48" y="48" width="1104" height="534" rx="22" fill="#1d3048" stroke="#34506c" stroke-width="2"/>
+  <text x="96" y="130" fill="#d6e5f5" font-family="Segoe UI, Arial, sans-serif" font-size="24" letter-spacing="3">NEXAMIND · ENGINEERING VERIFICATION</text>
+  <text x="96" y="220" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="700">Test suite</text>
+  <text x="96" y="360" fill="#75e0b1" font-family="Segoe UI, Arial, sans-serif" font-size="112" font-weight="700">44</text>
+  <text x="300" y="354" fill="#d8e5f3" font-family="Segoe UI, Arial, sans-serif" font-size="38">passed</text>
+  <rect x="96" y="395" width="1008" height="14" rx="7" fill="#29435b"/>
+  <rect x="96" y="395" width="963" height="14" rx="7" fill="#52c99a"/>
+  <text x="96" y="470" fill="#f6cf78" font-family="Segoe UI, Arial, sans-serif" font-size="27" font-weight="600">2 optional tests skipped</text>
+  <text x="96" y="520" fill="#b8c9da" font-family="Segoe UI, Arial, sans-serif" font-size="21">Ruff · lockfile · Compose config · diff checks: passed</text>
+  <text x="96" y="558" fill="#8ea4bb" font-family="Segoe UI, Arial, sans-serif" font-size="17">Local run · optional live provider and OCR checks were not run</text>
+</svg>

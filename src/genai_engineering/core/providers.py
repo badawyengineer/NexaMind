@@ -5,6 +5,7 @@ from typing import Protocol
 
 from genai_engineering.core.config import Settings, get_settings
 from genai_engineering.core.errors import ConfigurationError, ProviderError
+from genai_engineering.core.observability import observe
 
 
 class LLMProvider(Protocol):
@@ -44,7 +45,17 @@ class OpenAIProvider:
             }
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
-            result = self.client.chat.completions.create(**kwargs)
+            with observe(
+                "llm.generate",
+                provider="openai",
+                model=self.model,
+                json_mode=json_mode,
+            ) as event:
+                result = self.client.chat.completions.create(**kwargs)
+                usage = getattr(result, "usage", None)
+                if usage:
+                    event["input_tokens"] = usage.prompt_tokens
+                    event["output_tokens"] = usage.completion_tokens
             return result.choices[0].message.content or ""
         except Exception as exc:
             raise ProviderError("OpenAI generation failed") from exc
@@ -60,10 +71,11 @@ class OpenAIProvider:
                 temperature=self.temperature,
                 stream=True,
             )
-            for part in result:
-                token = part.choices[0].delta.content
-                if token:
-                    yield token
+            with observe("llm.stream", provider="openai", model=self.model):
+                for part in result:
+                    token = part.choices[0].delta.content
+                    if token:
+                        yield token
         except Exception as exc:
             raise ProviderError("OpenAI streaming failed") from exc
 
@@ -92,9 +104,16 @@ class GeminiProvider:
                 system_instruction=system or None,
                 response_mime_type="application/json" if json_mode else "text/plain",
             )
-            result = self.client.models.generate_content(
-                model=self.model, contents=prompt, config=config
-            )
+            with observe(
+                "llm.generate", provider="gemini", model=self.model, json_mode=json_mode
+            ) as event:
+                result = self.client.models.generate_content(
+                    model=self.model, contents=prompt, config=config
+                )
+                usage = getattr(result, "usage_metadata", None)
+                if usage:
+                    event["input_tokens"] = usage.prompt_token_count
+                    event["output_tokens"] = usage.candidates_token_count
             return result.text or ""
         except Exception as exc:
             raise ProviderError("Gemini generation failed") from exc
@@ -104,11 +123,12 @@ class GeminiProvider:
             from google.genai import types
 
             config = types.GenerateContentConfig(system_instruction=system or None)
-            for part in self.client.models.generate_content_stream(
-                model=self.model, contents=prompt, config=config
-            ):
-                if part.text:
-                    yield part.text
+            with observe("llm.stream", provider="gemini", model=self.model):
+                for part in self.client.models.generate_content_stream(
+                    model=self.model, contents=prompt, config=config
+                ):
+                    if part.text:
+                        yield part.text
         except Exception as exc:
             raise ProviderError("Gemini streaming failed") from exc
 
